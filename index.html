@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Barrage</title>
+    <link rel="stylesheet" href="./index.css">
+</head>
+<body>
+<div class="wrapper">
+    <h1>弹幕大神</h1>
+    <div id="content">
+        <canvas id="canvas"></canvas>
+        <video id="video" autoplay muted width="710" height="400" controls>
+            <source src="https://t.alipayobjects.com/images/T1T78eXapfXXXXXXXX.mp4" type="video/mp4">
+        </video>
+    </div>
+    <div class="tool">
+        <div class="form-item">
+            <input class="input" type="text" placeholder="添加弹幕" id="barrageText"/>
+            <button class="btn" id="sendBtn">发送</button>
+        </div>
+        <div class="form-item">
+            <span class="name">颜色：</span>
+            <input type="color" placeholder="选择颜色" value="#000" autocomplete id="colorInput">
+            <span class="name">文字大小：</span>
+            <input type="range" min="20" max="40" value="20" id="rangeInput">
+        </div>
+    </div>
+
+</div>
+</body>
+<script src="./barrageData.js"></script>
+<script src="./barrage.js"></script>
+<script>
+	// 获取元素
+	const $ = document.querySelector.bind(document);
+	const canvas = $('#canvas');
+	const video = $('#video');
+	// 点击按钮
+	const sendBtn = $('#sendBtn');
+
+	// 创建barrage实例
+	const canvasBarrage = new CanvasBarrage(canvas, video, {
+		data
+	})
+
+	// 播放
+	video.addEventListener('play', function () {
+		canvasBarrage.isPaused = false;
+		canvasBarrage.render();
+	}, false)
+
+	// 暂停
+	video.addEventListener('pause', function () {
+		canvasBarrage.isPaused = true;
+	}, false)
+
+	// 调整时间
+	video.addEventListener('seeked', function () {
+		canvasBarrage.reset()
+	}, false)
+
+	// 添加弹幕
+	sendBtn.addEventListener('click', function () {
+		const input = $('#barrageText');
+		const value = input.value,
+			time = video.currentTime,
+			color = $('#colorInput').value,
+			fontSize = $('#rangeInput').value;
+
+		const obj = { value, time, color, fontSize };
+		canvasBarrage.addBarrage(obj);
+		input.value = '';
+	}, false)
+
+</script>
+</html>
